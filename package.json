@@ -1,0 +1,41 @@
+{
+  "name": "epic-crawler",
+  "version": "1.0.0",
+  "description": "A simple crawler for retriving important data from web pages.",
+  "main": "./src/epicCrawler.js",
+  "types": "./src/epicCrawler.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saff-Elli-Khan/epic-crawler.git"
+  },
+  "keywords": [
+    "html",
+    "epic",
+    "crawler",
+    "deep",
+    "data",
+    "retrive",
+    "meta",
+    "tags",
+    "keywords",
+    "collect",
+    "links",
+    "scraper"
+  ],
+  "author": "Saif Ali Khan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Saff-Elli-Khan/epic-crawler/issues"
+  },
+  "homepage": "https://github.com/Saff-Elli-Khan/epic-crawler#readme",
+  "dependencies": {
+    "epic-link-crawler": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.18",
+    "@types/request": "^2.48.5"
+  }
+}
