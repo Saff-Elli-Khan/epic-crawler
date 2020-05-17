@@ -15,7 +15,8 @@ class epicCrawler {
                     self.crawledLinks.forEach((v, i) => {
                         self.elc.getContent(v).then((content) => {
                             if (typeof content != "undefined") {
-                                self.elc.$.load(content);
+                                let $ = self.elc.$.load(content);
+                                //Stuff Here
                             }
                             if (self.crawledLinks.length == (i + 1)) {
                             }
