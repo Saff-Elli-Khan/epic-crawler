@@ -1,10 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const epic_link_crawler_1 = require("epic-link-crawler");
-const tesseract_js_1 = __importDefault(require("tesseract.js"));
+const epic_sync_loops_1 = require("epic-sync-loops");
 var metaType;
 (function (metaType) {
     metaType["na"] = "none";
@@ -15,11 +12,9 @@ var metaType;
 ;
 class epicCrawler {
     //Construct
-    constructor(url, { depth = 1, strict = true, ocr = false } = {}) {
+    constructor(url, { depth = 1, strict = true } = {}) {
         this.crawledLinks = [];
         this.errorLinks = [];
-        this.ocrEngine = tesseract_js_1.default;
-        this.ocr = false;
         this.blobCache = null;
         this.htmlCache = null;
         this.data = [];
@@ -61,27 +56,6 @@ class epicCrawler {
                 place: this.getMetaTags("geo.placename", metaType.na),
             };
             return geo;
-        };
-        this.ocrImages = () => {
-            let self = this;
-            let images = self.collectImages();
-            let errorLinks = [];
-            let data = [];
-            return new Promise((resolve, reject) => {
-                images.forEach((v, i) => {
-                    self.ocrEngine.recognize(v, "eng").then(({ data: { text } }) => {
-                        data.push({
-                            link: v,
-                            text: text,
-                        });
-                        if (images.length == (data.length + errorLinks.length)) {
-                            resolve(data);
-                        }
-                    }).catch(() => {
-                        errorLinks.push(v);
-                    });
-                });
-            });
         };
         this.getMetaTags = (tagname, type) => {
             let self = this;
@@ -155,6 +129,7 @@ class epicCrawler {
                 title: null,
                 description: null,
                 image: null,
+                images: [],
                 keywords: null,
                 author: null,
                 strong: [],
@@ -163,6 +138,7 @@ class epicCrawler {
             };
             crawl.url = url;
             crawl.canonical = self.canonical();
+            crawl.images = self.collectImages();
             crawl.strong = self.getStrong();
             crawl.alt = self.getAlts();
             crawl.geo = self.getGeo();
@@ -197,17 +173,7 @@ class epicCrawler {
                 if (author != null)
                     crawl.author = author;
             });
-            return new Promise((resolve, reject) => {
-                if (self.ocr) {
-                    self.ocrImages().then((data) => {
-                        crawl.ocr = data;
-                        resolve(crawl);
-                    });
-                }
-                else {
-                    resolve(crawl);
-                }
-            });
+            return crawl;
         };
         this.crawl = () => {
             let self = this;
@@ -215,21 +181,30 @@ class epicCrawler {
                 self.elc.crawl().then((links) => {
                     self.crawledLinks = links;
                     let data = [];
-                    self.crawledLinks.forEach((v, i) => {
-                        self.elc.getContent(v).then((content) => {
-                            if (typeof content != "undefined") {
-                                self.blobCache = content;
-                                self.htmlCache = self.elc.$.load(self.blobCache);
-                                self.generateData(v).then((crawl) => {
-                                    data.push(crawl);
-                                });
-                            }
-                            if (self.crawledLinks.length == (data.length + self.errorLinks.length)) {
-                                resolve(data);
-                            }
-                        }).catch(() => {
-                            self.errorLinks.push(v);
-                        });
+                    let loop = new epic_sync_loops_1.epicSyncLoops((i) => {
+                        let link = self.crawledLinks[i];
+                        if (typeof link != "undefined") {
+                            self.elc.getContent(link).then((content) => {
+                                if (typeof content != "undefined") {
+                                    self.blobCache = content;
+                                    self.htmlCache = self.elc.$.load(self.blobCache);
+                                    data.push(self.generateData(link));
+                                    loop.next();
+                                }
+                                else {
+                                    //Skip
+                                    loop.next();
+                                }
+                            }).catch((error) => {
+                                console.log("Warning: " + error);
+                                self.errorLinks.push(link);
+                                loop.next();
+                            });
+                        }
+                        else {
+                            loop.end();
+                            resolve(data);
+                        }
                     });
                 }).catch((error) => {
                     reject(error);
@@ -241,18 +216,10 @@ class epicCrawler {
             depth: depth,
             strict: strict,
         });
-        //Enable OCR (Optical Character Recognition) For Crawler
-        if (ocr) {
-            require.resolve("tesseract.js");
-            this.ocrEngine = tesseract_js_1.default;
-        }
-        this.ocr = ocr;
     }
 }
 exports.epicCrawler = epicCrawler;
-new epicCrawler("https://guardwatch.net", {
-    ocr: true,
-}).crawl()
+new epicCrawler("https://letscreatedesign.com").crawl()
     .then((data) => {
     console.log(data);
 }).catch((error) => {
