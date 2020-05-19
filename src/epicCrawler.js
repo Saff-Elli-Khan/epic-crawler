@@ -134,7 +134,6 @@ class epicCrawler {
                 author: null,
                 strong: [],
                 alt: [],
-                ocr: [],
             };
             crawl.url = url;
             crawl.canonical = self.canonical();
@@ -142,7 +141,6 @@ class epicCrawler {
             crawl.strong = self.getStrong();
             crawl.alt = self.getAlts();
             crawl.geo = self.getGeo();
-            crawl.ocr = [];
             //Get Fixed
             let check = [metaType.na, metaType.og, metaType.tw, metaType.ip];
             check.forEach((v, i) => {
@@ -219,7 +217,9 @@ class epicCrawler {
     }
 }
 exports.epicCrawler = epicCrawler;
-new epicCrawler("https://letscreatedesign.com").crawl()
+new epicCrawler("https://letscreatedesign.com", {
+    depth: 3,
+}).crawl()
     .then((data) => {
     console.log(data);
 }).catch((error) => {
