@@ -134,7 +134,9 @@ class epicCrawler {
                 author: null,
                 strong: [],
                 alt: [],
+                geo: {},
             };
+            //Collect & Store
             crawl.url = url;
             crawl.canonical = self.canonical();
             crawl.images = self.collectImages();
