@@ -217,12 +217,4 @@ class epicCrawler {
     }
 }
 exports.epicCrawler = epicCrawler;
-new epicCrawler("https://letscreatedesign.com", {
-    depth: 3,
-}).crawl()
-    .then((data) => {
-    console.log(data);
-}).catch((error) => {
-    console.log(error);
-});
 //# sourceMappingURL=epicCrawler.js.map
