@@ -210,10 +210,15 @@ class epicCrawler {
             });
         };
         //Initialize Link Crawler
-        this.elc = new epic_link_crawler_1.epicLinkCrawler(url, {
-            depth: depth,
-            strict: strict,
-        });
+        try {
+            this.elc = new epic_link_crawler_1.epicLinkCrawler(url, {
+                depth: depth,
+                strict: strict,
+            });
+        }
+        catch (ex) {
+            throw new Error(ex.message);
+        }
     }
 }
 exports.epicCrawler = epicCrawler;

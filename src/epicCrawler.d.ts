@@ -1,8 +1,4 @@
-import { epicLinkCrawler } from "epic-link-crawler";
-export declare type options = {
-    depth?: Number;
-    strict?: Boolean;
-};
+import { epicLinkCrawler, options } from "epic-link-crawler";
 export declare enum metaType {
     na = "none",
     og = "openGraph",
