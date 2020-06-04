@@ -1,9 +1,9 @@
 import { epicLinkCrawler } from "epic-link-crawler";
-declare type options = {
+export declare type options = {
     depth?: Number;
     strict?: Boolean;
 };
-declare enum metaType {
+export declare enum metaType {
     na = "none",
     og = "openGraph",
     tw = "twitter",
@@ -27,5 +27,4 @@ export declare class epicCrawler {
     protected generateData: (url: string) => any;
     crawl: () => Promise<unknown>;
 }
-export {};
 //# sourceMappingURL=epicCrawler.d.ts.map

@@ -8,7 +8,7 @@ var metaType;
     metaType["og"] = "openGraph";
     metaType["tw"] = "twitter";
     metaType["ip"] = "itemprop";
-})(metaType || (metaType = {}));
+})(metaType = exports.metaType || (exports.metaType = {}));
 ;
 class epicCrawler {
     //Construct
