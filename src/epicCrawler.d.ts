@@ -5,6 +5,7 @@ export declare enum metaType {
     tw = "twitter",
     ip = "itemprop"
 }
+export declare type crawlerOptions = options;
 export declare class epicCrawler {
     protected elc: epicLinkCrawler;
     protected crawledLinks: string[];
@@ -12,7 +13,7 @@ export declare class epicCrawler {
     protected blobCache: any;
     protected htmlCache: any;
     protected data: never[];
-    constructor(url: string, { depth, strict }?: options);
+    constructor(url: string, { depth, strict }?: crawlerOptions);
     protected getTitle: () => any;
     protected canonical: () => any;
     protected getGeo: () => object;
