@@ -37,6 +37,7 @@ export declare class epicCrawler {
     protected getAlts: () => string[];
     protected getStrong: () => string[];
     protected generateData: (url: string) => CRAWL;
+    clearCache: () => epicLinkCrawler;
     crawl: () => Promise<unknown>;
 }
 //# sourceMappingURL=epicCrawler.d.ts.map

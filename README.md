@@ -17,6 +17,8 @@ crawler.crawl().then((data) => {
     console.log(data);
 });
 
+crawler.clearCache(); //Optional method to clear crawler cache.
+
 ```
 
 ## Options

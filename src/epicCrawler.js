@@ -180,6 +180,9 @@ class epicCrawler {
             });
             return crawl;
         };
+        this.clearCache = () => {
+            return this.elc.clearCache();
+        };
         this.crawl = () => {
             let self = this;
             return new Promise((resolve, reject) => {
