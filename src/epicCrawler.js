@@ -1,7 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const epic_link_crawler_1 = require("epic-link-crawler");
 const epic_sync_loops_1 = require("epic-sync-loops");
+//@ts-ignore
+const text_cleaner_1 = __importDefault(require("text-cleaner"));
 var metaType;
 (function (metaType) {
     metaType["na"] = "none";
@@ -33,7 +38,7 @@ class epicCrawler {
                     title = null;
                 }
             }
-            return title;
+            return text_cleaner_1.default(title).condense().valueOf();
         };
         this.canonical = () => {
             let self = this;
@@ -106,7 +111,7 @@ class epicCrawler {
             let alts = [];
             $('img[alt]').each(function () {
                 if (typeof $(this).attr("alt") != "undefined" && $(this).attr("alt") != "")
-                    alts.push($(this).attr("alt"));
+                    alts.push(text_cleaner_1.default($(this).attr("alt")).condense().valueOf());
             });
             return Array.from(new Set(alts));
         };
@@ -116,7 +121,7 @@ class epicCrawler {
             let strong = [];
             $('strong').each(function () {
                 if ($(this).text() != "")
-                    strong.push($(this).text());
+                    strong.push(text_cleaner_1.default($(this).text()).condense().valueOf());
             });
             return Array.from(new Set(strong));
         };
@@ -184,10 +189,12 @@ class epicCrawler {
                     let loop = new epic_sync_loops_1.epicSyncLoops((i) => {
                         let link = self.crawledLinks[i];
                         if (typeof link != "undefined") {
-                            self.elc.getContent(link).then((content) => {
+                            self.elc.storage.getItem(link).then((content) => {
                                 if (typeof content != "undefined") {
                                     self.blobCache = content;
                                     self.htmlCache = self.elc.$.load(self.blobCache);
+                                    //Log
+                                    console.log("Crawling: " + link);
                                     data.push(self.generateData(link));
                                     loop.next();
                                 }
