@@ -14,10 +14,12 @@ const crawler = new epicCrawler("https://google.com", {
 });
 
 crawler.crawl().then((data) => {
+    //Log Results
     console.log(data);
-});
 
-crawler.clearCache(); //Optional method to clear crawler cache.
+    //Optional method to clear crawler cache.
+    crawler.clearCache();
+});
 
 ```
 
