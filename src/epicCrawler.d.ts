@@ -1,4 +1,5 @@
 import { epicLinkCrawler, options } from "epic-link-crawler";
+import { ITEMS } from "epic-storage";
 export declare enum metaType {
     na = "none",
     og = "openGraph",
@@ -11,6 +12,7 @@ export declare type CRAWL = {
     type: string | null;
     title: string | null;
     description: string | null;
+    headings: string[];
     image: string | null;
     images: string[];
     keywords: string | null;
@@ -22,14 +24,19 @@ export declare type CRAWL = {
 export declare type crawlArray = CRAWL[];
 export declare type crawlerOptions = options;
 export declare class epicCrawler {
-    protected elc: epicLinkCrawler;
+    protected url: string;
+    protected elc: epicLinkCrawler | null;
     protected crawledLinks: string[];
     protected errorLinks: string[];
     protected blobCache: any;
     protected htmlCache: any;
+    protected options: crawlerOptions;
     protected data: never[];
-    constructor(url: string, { depth, strict }?: crawlerOptions);
+    protected contentCache: ITEMS;
+    constructor(url: string, { depth, strict, cache }?: crawlerOptions);
+    init: () => Promise<unknown>;
     protected getTitle: () => any;
+    protected getHeadings: () => string[];
     protected canonical: () => any;
     protected getGeo: () => object;
     protected getMetaTags: (tagname: string, type: metaType) => string | null;
@@ -37,7 +44,7 @@ export declare class epicCrawler {
     protected getAlts: () => string[];
     protected getStrong: () => string[];
     protected generateData: (url: string) => CRAWL;
-    clearCache: () => epicLinkCrawler;
-    crawl: () => Promise<unknown>;
+    clearCache: () => epicLinkCrawler | undefined;
+    crawl: () => Promise<crawlArray>;
 }
 //# sourceMappingURL=epicCrawler.d.ts.map

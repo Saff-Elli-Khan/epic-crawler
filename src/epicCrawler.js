@@ -17,28 +17,46 @@ var metaType;
 ;
 class epicCrawler {
     //Construct
-    constructor(url, { depth = 1, strict = true } = {}) {
+    constructor(url, { depth = 1, strict = true, cache = true } = {}) {
+        this.elc = null;
         this.crawledLinks = [];
         this.errorLinks = [];
         this.blobCache = null;
         this.htmlCache = null;
+        this.options = {};
         this.data = [];
+        this.contentCache = {};
+        this.init = () => {
+            this.elc = new epic_link_crawler_1.epicLinkCrawler;
+            return this.elc.init(this.url, {
+                depth: this.options.depth,
+                strict: this.options.strict,
+                cache: this.options.cache,
+            });
+        };
         this.getTitle = () => {
             let self = this;
             let $ = self.htmlCache;
             let title = $("title").text();
             if (typeof title == "undefined" || title == "") {
-                if ($("h1").length > 0 && $("h1").text() != "") {
-                    title = $("h1").text();
-                }
-                else if ($("h2").length > 0 && $("h2").text() != "") {
-                    title = $("h2").text();
-                }
-                else {
-                    title = null;
-                }
+                title = null;
             }
-            return text_cleaner_1.default(title).condense().valueOf();
+            else {
+                title = text_cleaner_1.default(title).condense().valueOf();
+            }
+            return title;
+        };
+        this.getHeadings = () => {
+            let self = this;
+            let $ = self.htmlCache;
+            let headings = [];
+            if ($("h1").length > 0 && $("h1").text() != "")
+                headings.push($("h1").text());
+            if ($("h2").length > 0 && $("h2").text() != "")
+                headings.push($("h2").text());
+            if ($("h3").length > 0 && $("h3").text() != "")
+                headings.push($("h3").text());
+            return headings;
         };
         this.canonical = () => {
             let self = this;
@@ -94,7 +112,7 @@ class epicCrawler {
             let absoluteSrc = [];
             //Collect Relative Source
             $("img[src^='/']").each(function () {
-                if ($(this).attr("src") != "")
+                if ($(this).attr("src") != "" && self.elc)
                     relativeSrc.push(self.elc.urlBase + "/" + ($(this).attr("src")).replace(/^\/+|\/+$/g, ""));
             });
             //Collect Absolute Source
@@ -133,6 +151,7 @@ class epicCrawler {
                 type: null,
                 title: null,
                 description: null,
+                headings: [],
                 image: null,
                 images: [],
                 keywords: null,
@@ -151,21 +170,21 @@ class epicCrawler {
             //Get Fixed
             let check = [metaType.na, metaType.og, metaType.tw, metaType.ip];
             check.forEach((v, i) => {
-                let title = self.getTitle();
-                if (title != null)
-                    crawl.title = title;
+                crawl.title = self.getTitle();
                 let type = self.getMetaTags("type", v);
                 if (type != null)
                     crawl.type = type;
                 let description = self.getMetaTags("description", v);
                 if (description != null)
                     crawl.description = description;
+                crawl.headings = self.getHeadings();
                 let image = self.getMetaTags("image", v);
-                if (image != null) {
+                if (image != null && self.elc) {
                     self.elc.validUrl(image).then(() => {
                         crawl.image = image;
                     }).catch(() => {
-                        crawl.image = self.elc.urlBase + "/" + image.replace(/^\/+|\/+$/g, "");
+                        if (self.elc)
+                            crawl.image = self.elc.urlBase + "/" + image.replace(/^\/+|\/+$/g, "");
                     });
                 }
                 let keywords = self.getMetaTags("keywords", v);
@@ -181,56 +200,51 @@ class epicCrawler {
             return crawl;
         };
         this.clearCache = () => {
-            return this.elc.clearCache();
+            var _a;
+            return (_a = this.elc) === null || _a === void 0 ? void 0 : _a.clearCache();
         };
         this.crawl = () => {
             let self = this;
             return new Promise((resolve, reject) => {
-                self.elc.crawl().then((links) => {
-                    self.crawledLinks = links;
-                    let data = [];
-                    let loop = new epic_sync_loops_1.epicSyncLoops((i) => {
-                        let link = self.crawledLinks[i];
-                        if (typeof link != "undefined") {
-                            self.elc.storage.getItem(link).then((content) => {
-                                if (typeof content != "undefined") {
+                if (self.elc)
+                    self.elc.crawl().then((links) => {
+                        self.crawledLinks = links;
+                        let data = [];
+                        let loop = new epic_sync_loops_1.epicSyncLoops((i) => {
+                            var _a;
+                            let link = self.crawledLinks[i];
+                            if (typeof link != "undefined") {
+                                (_a = self.elc) === null || _a === void 0 ? void 0 : _a.getContent(link).then((content) => {
+                                    var _a;
                                     self.blobCache = content;
-                                    self.htmlCache = self.elc.$.load(self.blobCache);
+                                    self.htmlCache = (_a = self.elc) === null || _a === void 0 ? void 0 : _a.$.load(self.blobCache);
                                     //Log
                                     console.log("Crawling: " + link);
                                     data.push(self.generateData(link));
                                     loop.next();
-                                }
-                                else {
-                                    //Skip
+                                }).catch((error) => {
+                                    console.log("Warning: " + error, link);
+                                    self.errorLinks.push(link);
                                     loop.next();
-                                }
-                            }).catch((error) => {
-                                console.log("Warning: " + error);
-                                self.errorLinks.push(link);
-                                loop.next();
-                            });
-                        }
-                        else {
-                            loop.end();
-                            resolve(data);
-                        }
+                                });
+                            }
+                            else {
+                                loop.end();
+                                resolve(data);
+                            }
+                        });
+                    }).catch((error) => {
+                        reject(error);
                     });
-                }).catch((error) => {
-                    reject(error);
-                });
+                else
+                    reject("Crawler is not Initialized Yet!");
             });
         };
-        //Initialize Link Crawler
-        try {
-            this.elc = new epic_link_crawler_1.epicLinkCrawler(url, {
-                depth: depth,
-                strict: strict,
-            });
-        }
-        catch (ex) {
-            throw new Error(ex.message);
-        }
+        this.url = url;
+        this.options.depth = depth;
+        this.options.strict = strict;
+        this.options.cache = cache;
+        return this;
     }
 }
 exports.epicCrawler = epicCrawler;
