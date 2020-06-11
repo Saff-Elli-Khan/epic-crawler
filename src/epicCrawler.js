@@ -51,11 +51,13 @@ class epicCrawler {
             let $ = self.htmlCache;
             let headings = [];
             if ($("h1").length > 0 && $("h1").text() != "")
-                headings.push($("h1").text());
+                $("h1").each(function () {
+                    headings.push(text_cleaner_1.default($(this).text()).condense().valueOf());
+                });
             if ($("h2").length > 0 && $("h2").text() != "")
-                headings.push($("h2").text());
-            if ($("h3").length > 0 && $("h3").text() != "")
-                headings.push($("h3").text());
+                $("h2").each(function () {
+                    headings.push(text_cleaner_1.default($(this).text()).condense().valueOf());
+                });
             return headings;
         };
         this.canonical = () => {
