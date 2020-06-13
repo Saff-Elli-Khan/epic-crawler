@@ -32,7 +32,7 @@ class epicCrawler {
             this.options.depth = depth;
             this.options.strict = strict;
             this.options.cache = cache;
-            return this.elc.init(this.url, {
+            return this.epicLinkCrawler.init(this.url, {
                 depth: this.options.depth,
                 strict: this.options.strict,
                 cache: this.options.cache,
@@ -118,8 +118,8 @@ class epicCrawler {
             let absoluteSrc = [];
             //Collect Relative Source
             $("img[src^='/']").each(function () {
-                if ($(this).attr("src") != "" && self.elc)
-                    relativeSrc.push(self.elc.urlBase + "/" + ($(this).attr("src")).replace(/^\/+|\/+$/g, ""));
+                if ($(this).attr("src") != "" && self.epicLinkCrawler)
+                    relativeSrc.push(self.epicLinkCrawler.urlBase + "/" + ($(this).attr("src")).replace(/^\/+|\/+$/g, ""));
             });
             //Collect Absolute Source
             $("img[src^='http']").each(function () {
@@ -185,12 +185,12 @@ class epicCrawler {
                     crawl.description = description;
                 crawl.headings = self.getHeadings();
                 let image = self.getMetaTags("image", v);
-                if (image != null && self.elc) {
-                    self.elc.validUrl(image).then(() => {
+                if (image != null && self.epicLinkCrawler) {
+                    self.epicLinkCrawler.validUrl(image).then(() => {
                         crawl.image = image;
                     }).catch(() => {
-                        if (self.elc)
-                            crawl.image = self.elc.urlBase + "/" + image.replace(/^\/+|\/+$/g, "");
+                        if (self.epicLinkCrawler)
+                            crawl.image = self.epicLinkCrawler.urlBase + "/" + image.replace(/^\/+|\/+$/g, "");
                     });
                 }
                 let keywords = self.getMetaTags("keywords", v);
@@ -206,23 +206,23 @@ class epicCrawler {
             return crawl;
         };
         this.clearCache = () => {
-            return this.elc.clearCache();
+            return this.epicLinkCrawler.clearCache();
         };
         this.crawl = () => {
             let self = this;
             return new Promise((resolve, reject) => {
-                if (self.elc)
-                    self.elc.crawl().then((links) => {
+                if (self.epicLinkCrawler)
+                    self.epicLinkCrawler.crawl().then((links) => {
                         self.crawledLinks = links;
                         let data = [];
                         let loop = new epic_sync_loops_1.epicSyncLoops((i) => {
                             var _a;
                             let link = self.crawledLinks[i];
                             if (typeof link != "undefined") {
-                                (_a = self.elc) === null || _a === void 0 ? void 0 : _a.getContent(link).then((content) => {
+                                (_a = self.epicLinkCrawler) === null || _a === void 0 ? void 0 : _a.getContent(link).then((content) => {
                                     var _a;
                                     self.blobCache = content;
-                                    self.htmlCache = (_a = self.elc) === null || _a === void 0 ? void 0 : _a.$.load(self.blobCache);
+                                    self.htmlCache = (_a = self.epicLinkCrawler) === null || _a === void 0 ? void 0 : _a.$.load(self.blobCache);
                                     //Log
                                     console.log("Crawling: " + link);
                                     data.push(self.generateData(link));
@@ -245,7 +245,7 @@ class epicCrawler {
                     reject("Crawler is not Initialized Yet!");
             });
         };
-        this.elc = new epic_link_crawler_1.epicLinkCrawler;
+        this.epicLinkCrawler = new epic_link_crawler_1.epicLinkCrawler;
         return this;
     }
 }

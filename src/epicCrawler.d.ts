@@ -25,7 +25,6 @@ export declare type crawlArray = CRAWL[];
 export declare type crawlerOptions = options;
 export declare class epicCrawler {
     protected url: string | null;
-    protected elc: epicLinkCrawler;
     protected crawledLinks: string[];
     protected errorLinks: string[];
     protected blobCache: any;
@@ -33,6 +32,7 @@ export declare class epicCrawler {
     protected options: crawlerOptions;
     protected data: never[];
     protected contentCache: ITEMS;
+    epicLinkCrawler: epicLinkCrawler;
     constructor();
     init: (url: string, { depth, strict, cache }?: options) => Promise<unknown>;
     protected getTitle: () => any;
