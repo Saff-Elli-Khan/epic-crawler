@@ -9,11 +9,10 @@ A simple crawler for scraping important data from web pages.
 ## Usage
 
 ```
-const crawler = new epicCrawler("https://google.com", {
+const crawler = new epicCrawler;
+crawler.init("https://google.com", {
     depth: 5,
-});
-
-crawler.init().then(() => {
+}).then(() => {
     crawler.crawl().then((data) => {
         console.log(data);
     });
@@ -33,6 +32,6 @@ Just three options are supported for now.
 
 ## Methods
 
-- **_init: () => Promise<unknown>_** - Initialize crawler.
+- **_init: (url: string, { depth, strict, cache }?: options) => Promise<unknown>_** - Initialize crawler.
 - **_clearCache: () => this_** - Clear previous crawled cache.
 - **_crawl: () => Promise<unknown>_** - Start Crawling.

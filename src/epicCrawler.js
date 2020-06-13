@@ -17,7 +17,9 @@ var metaType;
 ;
 class epicCrawler {
     //Construct
-    constructor(url, { depth = 1, strict = true, cache = true } = {}) {
+    constructor() {
+        //Defaults
+        this.url = null;
         this.elc = null;
         this.crawledLinks = [];
         this.errorLinks = [];
@@ -26,7 +28,11 @@ class epicCrawler {
         this.options = {};
         this.data = [];
         this.contentCache = {};
-        this.init = () => {
+        this.init = (url, { depth = 1, strict = true, cache = true } = {}) => {
+            this.url = url;
+            this.options.depth = depth;
+            this.options.strict = strict;
+            this.options.cache = cache;
             this.elc = new epic_link_crawler_1.epicLinkCrawler;
             return this.elc.init(this.url, {
                 depth: this.options.depth,
@@ -242,10 +248,6 @@ class epicCrawler {
                     reject("Crawler is not Initialized Yet!");
             });
         };
-        this.url = url;
-        this.options.depth = depth;
-        this.options.strict = strict;
-        this.options.cache = cache;
         return this;
     }
 }
