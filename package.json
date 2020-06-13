@@ -1,6 +1,6 @@
 {
   "name": "epic-crawler",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "A simple crawler for retriving important data from web pages.",
   "main": "./src/epicCrawler.js",
   "types": "./src/epicCrawler.d.ts",
