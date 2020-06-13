@@ -33,7 +33,7 @@
   "homepage": "https://github.com/Saff-Elli-Khan/epic-crawler#readme",
   "dependencies": {
     "@types/image-size": "^0.8.0",
-    "epic-link-crawler": "^1.0.22",
+    "epic-link-crawler": "^1.0.23",
     "epic-sync-loops": "^1.0.4",
     "image-size": "^0.8.3",
     "text-cleaner": "^1.1.0"
