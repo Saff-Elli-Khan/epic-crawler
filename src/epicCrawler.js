@@ -20,7 +20,6 @@ class epicCrawler {
     constructor() {
         //Defaults
         this.url = null;
-        this.elc = null;
         this.crawledLinks = [];
         this.errorLinks = [];
         this.blobCache = null;
@@ -33,7 +32,6 @@ class epicCrawler {
             this.options.depth = depth;
             this.options.strict = strict;
             this.options.cache = cache;
-            this.elc = new epic_link_crawler_1.epicLinkCrawler;
             return this.elc.init(this.url, {
                 depth: this.options.depth,
                 strict: this.options.strict,
@@ -208,8 +206,7 @@ class epicCrawler {
             return crawl;
         };
         this.clearCache = () => {
-            var _a;
-            return (_a = this.elc) === null || _a === void 0 ? void 0 : _a.clearCache();
+            return this.elc.clearCache();
         };
         this.crawl = () => {
             let self = this;
@@ -248,6 +245,7 @@ class epicCrawler {
                     reject("Crawler is not Initialized Yet!");
             });
         };
+        this.elc = new epic_link_crawler_1.epicLinkCrawler;
         return this;
     }
 }
