@@ -44,6 +44,7 @@ export declare class epicCrawler {
     protected getAlts: () => string[];
     protected getStrong: () => string[];
     protected generateData: (url: string) => CRAWL;
+    blackList: (fingerPrintList: (string | RegExp)[]) => epicLinkCrawler;
     clearCache: () => epicLinkCrawler;
     crawl: () => Promise<crawlArray>;
 }

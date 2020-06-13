@@ -33,5 +33,6 @@ Just three options are supported for now.
 ## Methods
 
 - **_init: (url: string, { depth, strict, cache }?: options) => Promise<unknown>_** - Initialize crawler.
+- **_blackList: (fingerPrintList: (string | RegExp)[]) => this_** - Black List Links.
 - **_clearCache: () => this_** - Clear previous crawled cache.
 - **_crawl: () => Promise<unknown>_** - Start Crawling.

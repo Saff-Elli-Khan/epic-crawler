@@ -205,6 +205,9 @@ class epicCrawler {
             });
             return crawl;
         };
+        this.blackList = (fingerPrintList) => {
+            return this.epicLinkCrawler.blackList(fingerPrintList);
+        };
         this.clearCache = () => {
             return this.epicLinkCrawler.clearCache();
         };
